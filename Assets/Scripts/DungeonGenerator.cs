@@ -3,6 +3,7 @@ using UnityEngine;
 //Added "Systems.Collections.Generic;" for the List related command. This is not a Multiplayer game so Unity.Netcode; was not needed.
 public class DungeonGenerator : MonoBehaviour
 {
+
     /// <summary>
     /// Singleton : A component that has only one instance in a given world.
     /// </summary>
@@ -69,6 +70,7 @@ public class DungeonGenerator : MonoBehaviour
     private void Start()
     {
         generatedRooms = new List<DungeonPart>(); //Creates list
+        //GenerateSingleRoom();
         Generate();
         //StartGeneration();
        
@@ -299,5 +301,122 @@ public class DungeonGenerator : MonoBehaviour
     public List<DungeonPart> GetGeneratedRooms() => generatedRooms;
 
     public bool IsGenerated() => isGenerated;
+
+    public void GenerateSingleRoom()
+    {
+        //We take the count of alternate enterances from the noOFRooms to keep the same amount of rooms with the alternate enterances
+        for (int i = 0; i < 1; i++)
+        {
+            //Bellow will run only at the start of Generation to create the starting room
+            if (generatedRooms.Count < 1)
+            {
+                GameObject generatedRoom = Instantiate(enterance, transform.position, transform.rotation);
+
+                if (generatedRoom.TryGetComponent<DungeonPart>(out DungeonPart dungeonPart))
+                {
+                    generatedRooms.Add(dungeonPart); //Adds the Entrance room to the list
+                }
+            }
+            else
+            {
+                bool shouldPlaceHallway = Random.Range(0f, 1f) > 0.5f; //This is basically a coin flip for the computer to decide if it should place a hallway or room.
+                DungeonPart randomGeneratedRoom = null; //This indicates if a room is generated or not
+                Transform room1Entrypoint = null; //This alligns entry points of rooms
+                int totalRetries = 100;
+                int retryIndex = 0;
+
+                //This Loop checks all entrypoints and determins which are availaible or not
+                //Adding totalRetries and retryIndex is a safety messure for the loop incase it cant find the generated room and stops it from looping.
+                while (randomGeneratedRoom == null && retryIndex < totalRetries)
+                {
+                    int randomLinkRoomIndex = Random.Range(0, generatedRooms.Count);
+                    DungeonPart roomtoTest = generatedRooms[randomLinkRoomIndex];
+                    if (roomtoTest.HasAvailableEntrypoint(out room1Entrypoint))
+                    {
+                        randomGeneratedRoom = roomtoTest;
+                        break; //"Break" stops the while loop
+                    }
+                    retryIndex++;
+                }
+
+                GameObject doorToAlign = Instantiate(door, transform.position, transform.rotation);
+                //If there is an available entry point then a door is created in its place
+
+                if (shouldPlaceHallway)
+                {
+                    int randomIndex = Random.Range(0, hallways.Count);
+                    GameObject generatedHallway = Instantiate(hallways[randomIndex], transform.position, transform.rotation);
+                    //generatedHallway.transform.SetParent(null); (Multiplayer thing)
+                    if (generatedHallway.TryGetComponent<DungeonPart>(out DungeonPart dungeonPart))
+                    {
+                        if (dungeonPart.HasAvailableEntrypoint(out Transform room2Entrypoint))
+                        {
+                            generatedRooms.Add(dungeonPart); //This adds the hallway to the generated rooms list
+                            doorToAlign.transform.position = room1Entrypoint.transform.position; // Aligns the room
+                            doorToAlign.transform.rotation = room1Entrypoint.transform.rotation; // Aligns the room
+                            AlignRooms(randomGeneratedRoom.transform, generatedHallway.transform, room1Entrypoint, room2Entrypoint);
+                            if (HandleIntersection(dungeonPart))
+                            {
+                                dungeonPart.UnuseEntrypoint(room2Entrypoint);
+                                randomGeneratedRoom.UnuseEntrypoint(room1Entrypoint);
+                                RetryPlacement(generatedHallway, doorToAlign);
+                                continue;
+                                //This code refreshes the generator if there is overlapping rooms
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    //Same logic of creating and placing hallways for rooms and special rooms
+
+                    GameObject generatedRoom; //Gets the generated room
+
+                    if (specialRooms.Count > 0) //Detects if there are special rooms and how often they should be generated
+                    {
+                        bool shouldPlaceSpecialRoom = Random.Range(0f, 1f) > 0.9f;
+
+                        if (shouldPlaceSpecialRoom)
+                        {
+                            int randomIndex = Random.Range(0, specialRooms.Count);
+                            generatedRoom = Instantiate(specialRooms[randomIndex], transform.position, transform.rotation);
+                        }
+                        else
+                        {
+                            int randomIndex = Random.Range(0, rooms.Count);
+                            generatedRoom = Instantiate(rooms[randomIndex], transform.position, transform.rotation);
+                        }
+                    }
+                    else //if not just spawns a normal room
+                    {
+                        int randomIndex = Random.Range(0, rooms.Count);
+                        generatedRoom = Instantiate(rooms[randomIndex], transform.position, transform.rotation);
+                    }
+
+                    generatedRoom.transform.SetParent(null);
+
+                    //Below justs creates the room and then aligns the rooms
+                    if (generatedRoom.TryGetComponent<DungeonPart>(out DungeonPart dungeonPart))
+                    {
+                        if (dungeonPart.HasAvailableEntrypoint(out Transform room2Entrypoint))
+                        {
+                            generatedRooms.Add(dungeonPart);
+                            doorToAlign.transform.position = room1Entrypoint.transform.position;
+                            doorToAlign.transform.rotation = room1Entrypoint.transform.rotation;
+                            AlignRooms(randomGeneratedRoom.transform, generatedRoom.transform, room1Entrypoint, room2Entrypoint);
+
+                            if (HandleIntersection(dungeonPart))
+                            {
+                                dungeonPart.UnuseEntrypoint(room2Entrypoint);
+                                randomGeneratedRoom.UnuseEntrypoint(room1Entrypoint);
+                                RetryPlacement(generatedRoom, doorToAlign);
+                                continue;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }    
 }
 
