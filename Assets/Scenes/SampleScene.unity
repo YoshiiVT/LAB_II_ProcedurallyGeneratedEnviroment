@@ -6895,7 +6895,7 @@ MonoBehaviour:
   - {fileID: 1714174256}
   - {fileID: 1714174256}
   door: {fileID: 9029925516877180713}
-  noOfRooms: 2
+  noOfRooms: 20
   roomsLayermask:
     serializedVersion: 2
     m_Bits: 64

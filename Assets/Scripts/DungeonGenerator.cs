@@ -98,7 +98,7 @@ public class DungeonGenerator : MonoBehaviour
                 bool shouldPlaceHallway = Random.Range(0f, 1f) > 0.5f; //This is basically a coin flip for the computer to decide if it should place a hallway or room.
                 DungeonPart randomGeneratedRoom = null; //This indicates if a room is generated or not
                 Transform room1Entrypoint = null; //This alligns entry points of rooms
-                int totalRetries = 100;
+                int totalRetries = 10;
                 int retryIndex = 0;
 
                 //This Loop checks all entrypoints and determins which are availaible or not
@@ -113,7 +113,10 @@ public class DungeonGenerator : MonoBehaviour
                         break; //"Break" stops the while loop
                     }
                     retryIndex++;
+                    print(retryIndex);
                 }
+
+
 
                 GameObject doorToAlign = Instantiate(door, transform.position, transform.rotation);
                 //If there is an available entry point then a door is created in its place
@@ -340,6 +343,8 @@ public class DungeonGenerator : MonoBehaviour
                 }
 
                 GameObject doorToAlign = Instantiate(door, transform.position, transform.rotation);
+
+                door.GetComponent<Door>().hasTriggered = false;
                 //If there is an available entry point then a door is created in its place
 
                 if (shouldPlaceHallway)
