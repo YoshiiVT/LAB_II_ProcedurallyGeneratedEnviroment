@@ -1,7 +1,8 @@
+using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 //Added "Systems.Collections.Generic;" for the List related command. This is not a Multiplayer game so Unity.Netcode; was not needed.
-public class DungeonGenerator : MonoBehaviour
+public class DungeonGenerator : Singleton<DungeonGenerator>
 {
 
     /// <summary>
@@ -58,6 +59,7 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField]
     private LayerMask roomsLayermask;
 
+    [SerializeField]
     private List<DungeonPart> generatedRooms; //This list will contain all the rooms generated in the dungeon.
 
     private bool isGenerated = false; //This will tell the engine if something has already been made or not
@@ -208,7 +210,7 @@ public class DungeonGenerator : MonoBehaviour
     {
         DungeonPart randomGeneratedRoom = null;
         Transform room1Entrypoint = null;
-        int totalRetries = 100;
+        int totalRetries = 10;
         int retryIndex = 0;
 
         while (randomGeneratedRoom == null && retryIndex < totalRetries) //Creates room and then checks it
@@ -325,7 +327,7 @@ public class DungeonGenerator : MonoBehaviour
                 bool shouldPlaceHallway = Random.Range(0f, 1f) > 0.5f; //This is basically a coin flip for the computer to decide if it should place a hallway or room.
                 DungeonPart randomGeneratedRoom = null; //This indicates if a room is generated or not
                 Transform room1Entrypoint = null; //This alligns entry points of rooms
-                int totalRetries = 100;
+                int totalRetries = 10;
                 int retryIndex = 0;
 
                 //This Loop checks all entrypoints and determins which are availaible or not

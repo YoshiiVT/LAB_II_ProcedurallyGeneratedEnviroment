@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class DungeonPart : MonoBehaviour
+public class DungeonPart : GameBehaviour
 {
    public enum DungeonPartType
     {
@@ -35,7 +35,7 @@ public class DungeonPart : MonoBehaviour
         Transform resultingEntry = null;
         bool result  = false;
 
-        int totalRetries = 100;
+        int totalRetries = 10;
         int retryIndex = 1;
 
         if (entrypoints.Count == 1) //This script will only run if there is only one entrypoint
@@ -62,6 +62,7 @@ public class DungeonPart : MonoBehaviour
 
         while (resultingEntry == null && retryIndex < totalRetries) //This is if there are multiple entries to the room
         {
+
             int randomEntryIndex = Random.Range(0, entrypoints.Count);
 
             Transform entry = entrypoints[randomEntryIndex];
@@ -82,6 +83,11 @@ public class DungeonPart : MonoBehaviour
         entrypoint = resultingEntry;
         return result;
         // Same as before, except it checks multiple entries to see if they are occupied.
+    }
+
+    private object GetClosestObject(Transform transform, List<Transform> entrypoints)
+    {
+        throw new System.NotImplementedException();
     }
 
     /// <summary>
