@@ -1,132 +1,172 @@
 using System.Collections.Generic;
+
 using Unity.VisualScripting;
+
 using UnityEngine;
 
 public class DungeonPart : GameBehaviour
+
 {
-   public enum DungeonPartType
+
+    public enum DungeonPartType
+
     {
-        //Enum assigns numeric value to words
-        Room, //Value = 0
-        Hallway //Value = 1
-        //Another example 'Value = 2
+
+        Room,
+
+        Hallway
+
     }
 
     [SerializeField]
-    private LayerMask roomsLayermask; //Defined before in DungeonGenerator.cs
+
+    private LayerMask roomsLayermask;
 
     [SerializeField]
-    private DungeonPartType dungeonPartType; //Apparently "Irrelevant"
+
+    private DungeonPartType dungeonPartType;
 
     [SerializeField]
-    private GameObject fillerWall; //This fills out empty enterance points
 
-    public List<Transform> entrypoints; //This list will contain all the entrypoints generated in the dungeon.
+    private GameObject fillerWall;
 
-    public new Collider collider; //This ill tell the generator if a room is colliding with another room
+    public List<Transform> entrypoints;
+
+    public new Collider collider;
 
     /// <summary>
-    /// Searches through all the entrypoints in the game and brings back a list of ones that are not occupied
+
+    /// Searches through all the entrypoints in the game and finds the closest available one.
+
     /// </summary>
+
     /// <param name="entrypoint"></param>
+
     /// <returns></returns>
+
     public bool HasAvailableEntrypoint(out Transform entrypoint)
+
     {
-        Transform resultingEntry = null;
-        bool result  = false;
 
-        int totalRetries = 10;
-        int retryIndex = 1;
+        entrypoint = null;
 
-        if (entrypoints.Count == 1) //This script will only run if there is only one entrypoint
-        {
-            Transform entry = entrypoints[0];
-            if (entry.TryGetComponent<EntryPoint>(out EntryPoint res))
-            {
-                if (res.IsOccupied())
-                {
-                    result = false;
-                    resultingEntry = null;
-                }
-                else
-                {
-                    result = true;
-                    resultingEntry = entry;
-                    res.SetOccupied();
-                }
-                entrypoint = resultingEntry;
-                return result;
-                //this checks if the one entrypoint is occupied and returns a result
-            }
-        }
+        float closestDistance = float.MaxValue;
 
-        while (resultingEntry == null && retryIndex < totalRetries) //This is if there are multiple entries to the room
+        foreach (Transform entry in entrypoints)
+
         {
 
-            int randomEntryIndex = Random.Range(0, entrypoints.Count);
+            if (entry.TryGetComponent<EntryPoint>(out EntryPoint entryPoint) && !entryPoint.IsOccupied())
 
-            Transform entry = entrypoints[randomEntryIndex];
-
-            if (entry.TryGetComponent<EntryPoint>(out EntryPoint entryPoint))
             {
-                if (!entryPoint.IsOccupied())
+
+                float distance = Vector3.Distance(transform.position, entry.position);
+
+                if (distance < closestDistance)
+
                 {
-                    resultingEntry = entry;
-                    result = true;
-                    entryPoint.SetOccupied();
-                    break;
+
+                    closestDistance = distance;
+
+                    entrypoint = entry;
+
                 }
+
             }
-            retryIndex++;
+
         }
 
-        entrypoint = resultingEntry;
-        return result;
-        // Same as before, except it checks multiple entries to see if they are occupied.
-    }
+        if (entrypoint != null)
 
-    private object GetClosestObject(Transform transform, List<Transform> entrypoints)
-    {
-        throw new System.NotImplementedException();
+        {
+
+            entrypoint.GetComponent<EntryPoint>().SetOccupied(true);
+
+            Debug.Log($"Found available entry point at {entrypoint.position}");
+
+            return true;
+
+        }
+
+        Debug.Log("No available entry points found.");
+
+        return false;
+
     }
 
     /// <summary>
-    /// This function is run when the script detects overlapping rooms to stop by unusing then reusing the entrypoint.
+
+    /// Unsets an entry point so it can be used again.
+
     /// </summary>
+
     /// <param name="entrypoint"></param>
+
     public void UnuseEntrypoint(Transform entrypoint)
+
     {
+
         if (entrypoint.TryGetComponent<EntryPoint>(out EntryPoint entry))
+
         {
+
             entry.SetOccupied(false);
+
+            Debug.Log($"Entry point at {entrypoint.position} freed up.");
+
         }
+
     }
 
     /// <summary>
-    /// This is done at the end of the generation process
-    /// This function searches all the entry points and detects if they are occupied.
-    /// If not it fills it in.
+
+    /// This function is executed at the end of the generation process.
+
+    /// It searches all the entry points and detects if they are occupied.
+
+    /// If not, it fills them in with walls.
+
     /// </summary>
+
     public void FillEmptyDoors()
+
     {
+
         entrypoints.ForEach((entry) =>
+
         {
+
             if (entry.TryGetComponent(out EntryPoint entryPoint))
+
             {
+
                 if (!entryPoint.IsOccupied())
+
                 {
+
                     GameObject wall = Instantiate(fillerWall);
+
                     wall.transform.position = entry.transform.position;
+
                     wall.transform.rotation = entry.transform.rotation;
+
                 }
+
             }
+
         });
+
     }
 
     private void OnDrawGizmos()
+
     {
+
         Gizmos.color = Color.yellow;
+
         Gizmos.DrawWireCube(collider.bounds.center, collider.bounds.size);
+
     }
+
 }
 

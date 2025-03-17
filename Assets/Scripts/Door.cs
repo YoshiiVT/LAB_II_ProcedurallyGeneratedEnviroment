@@ -16,7 +16,7 @@ public class Door : MonoBehaviour
     {
         if(hasTriggered == false)
         {
-            dg.GenerateSingleRoom();
+            dg.PlaceNextRoom();
             hasTriggered = true;
         }
         
