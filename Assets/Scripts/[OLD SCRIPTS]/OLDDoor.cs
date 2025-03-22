@@ -1,25 +1,26 @@
 using UnityEngine;
 
-public class Door : GameBehaviour
+public class OLDDoor : MonoBehaviour
 {
     [SerializeField] GameObject doorMesh;
     public GameObject dungeonGeneratorObj;
+    public RoomGenerator dg;
     public bool hasTriggered;
 
     private void Start()
     {
         dungeonGeneratorObj = GameObject.FindGameObjectWithTag("DungeonGenerator");
+        dg = dungeonGeneratorObj.GetComponent<RoomGenerator>();
     }
     private void OnTriggerEnter(Collider other)
     {
-        
+        /*
         if(hasTriggered == false)
         {
-            _DG.noOfRooms = 1;
-            _DG.Generate();
+            dg.PlaceNextRoom();
             hasTriggered = true;
         }
-        
+        */
         doorMesh.SetActive(false);
     }
 
@@ -27,4 +28,5 @@ public class Door : GameBehaviour
     {
         doorMesh.SetActive(true);
     }
+
 }

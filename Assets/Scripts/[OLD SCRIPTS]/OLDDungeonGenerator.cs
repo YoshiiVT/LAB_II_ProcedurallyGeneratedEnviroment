@@ -2,9 +2,9 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DungeonGenerator : Singleton<DungeonGenerator>
+public class OLDDungeonGenerator : Singleton<OLDDungeonGenerator>
 {
-    public static DungeonGenerator Instance { get; private set; }
+    public static OLDDungeonGenerator Instance { get; private set; }
 
     [SerializeField] private GameObject enterance;
     [SerializeField] private List<GameObject> rooms;
@@ -14,14 +14,14 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
     [SerializeField] private GameObject door;
     [SerializeField] private int noOfRooms = 10;
     [SerializeField] private LayerMask roomsLayermask;
-    private List<DungeonPart> generatedRooms;
+    private List<OLDDungeonPart> generatedRooms;
     private bool isGenerated = false;
 
     private void Awake() { Instance = this; }
 
     private void Start()
     {
-        generatedRooms = new List<DungeonPart>();
+        generatedRooms = new List<OLDDungeonPart>();
         Generate();
     }
 
@@ -32,7 +32,7 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
             if (generatedRooms.Count < 1)
             {
                 GameObject generatedRoom = Instantiate(enterance, transform.position, transform.rotation);
-                if (generatedRoom.TryGetComponent<DungeonPart>(out DungeonPart dungeonPart))
+                if (generatedRoom.TryGetComponent<OLDDungeonPart>(out OLDDungeonPart dungeonPart))
                     generatedRooms.Add(dungeonPart);
             }
             else
@@ -44,7 +44,7 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
 
     public void PlaceNextRoom()
     {
-        DungeonPart randomGeneratedRoom = null;
+        OLDDungeonPart randomGeneratedRoom = null;
         Transform room1Entrypoint = null;
         int retryIndex = 0;
         const int totalRetries = 10;
@@ -52,7 +52,7 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
         while (randomGeneratedRoom == null && retryIndex < totalRetries)
         {
             int randomLinkRoomIndex = Random.Range(0, generatedRooms.Count);
-            DungeonPart roomToTest = generatedRooms[randomLinkRoomIndex];
+            OLDDungeonPart roomToTest = generatedRooms[randomLinkRoomIndex];
 
             Debug.Log($" Checking room: {roomToTest.gameObject.name} for available entry points...");
 
@@ -75,7 +75,7 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
 
         GameObject newRoom = Instantiate(Random.Range(0f, 1f) > 0.5f ? GetRandomHallway() : GetRandomRoom(), transform.position, transform.rotation);
 
-        if (newRoom.TryGetComponent<DungeonPart>(out DungeonPart dungeonPart) && dungeonPart.HasAvailableEntrypoint(out Transform room2Entrypoint))
+        if (newRoom.TryGetComponent<OLDDungeonPart>(out OLDDungeonPart dungeonPart) && dungeonPart.HasAvailableEntrypoint(out Transform room2Entrypoint))
         {
             if (!WillOverlap(room2Entrypoint.position, newRoom))
             {

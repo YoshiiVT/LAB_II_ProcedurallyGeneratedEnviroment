@@ -1,172 +1,109 @@
 using System.Collections.Generic;
-
 using Unity.VisualScripting;
-
 using UnityEngine;
 
-public class DungeonPart : GameBehaviour
-
+public class DungeonPart : MonoBehaviour
 {
-
     public enum DungeonPartType
-
     {
-
         Room,
-
         Hallway
-
     }
 
     [SerializeField]
-
     private LayerMask roomsLayermask;
 
     [SerializeField]
-
     private DungeonPartType dungeonPartType;
 
     [SerializeField]
-
-    private GameObject fillerWall;
+    private GameObject fillerwall;
 
     public List<Transform> entrypoints;
 
     public new Collider collider;
 
-    /// <summary>
-
-    /// Searches through all the entrypoints in the game and finds the closest available one.
-
-    /// </summary>
-
-    /// <param name="entrypoint"></param>
-
-    /// <returns></returns>
-
     public bool HasAvailableEntrypoint(out Transform entrypoint)
-
     {
+        Transform resultingEntry = null;
+        bool result = false;
 
-        entrypoint = null;
+        int totalRetries = 100;
+        int retryIndex = 0;
 
-        float closestDistance = float.MaxValue;
-
-        foreach (Transform entry in entrypoints)
-
+        if (entrypoints.Count == 1)
         {
-
-            if (entry.TryGetComponent<EntryPoint>(out EntryPoint entryPoint) && !entryPoint.IsOccupied())
-
+            Transform entry = entrypoints[0];
+            if (entry.TryGetComponent<EntryPoint>(out EntryPoint res))
             {
-
-                float distance = Vector3.Distance(transform.position, entry.position);
-
-                if (distance < closestDistance)
-
+                if (res.IsOccupied())
                 {
-
-                    closestDistance = distance;
-
-                    entrypoint = entry;
-
+                    result = false;
+                    resultingEntry = null;
                 }
-
+                else
+                {
+                    result = true;
+                    resultingEntry = entry;
+                    res.SetOccupied();
+                }
+                entrypoint = resultingEntry;
+                return result;
             }
-
         }
 
-        if (entrypoint != null)
-
+        while (resultingEntry == null && retryIndex < totalRetries)
         {
+            int randomEntryIndex = Random.Range(0, entrypoints.Count);
 
-            entrypoint.GetComponent<EntryPoint>().SetOccupied(true);
+            Transform entry = entrypoints[randomEntryIndex];
 
-            Debug.Log($"Found available entry point at {entrypoint.position}");
-
-            return true;
-
+            if (entry.TryGetComponent<EntryPoint>(out EntryPoint entryPoint))
+            {
+                if (!entryPoint.IsOccupied())
+                {
+                    resultingEntry = entry;
+                    result = true;
+                    entryPoint.SetOccupied();
+                    break;
+                }
+            }
+            retryIndex++;
         }
+        entrypoint = resultingEntry;
 
-        Debug.Log("No available entry points found.");
-
-        return false;
-
+        return result;
     }
-
-    /// <summary>
-
-    /// Unsets an entry point so it can be used again.
-
-    /// </summary>
-
-    /// <param name="entrypoint"></param>
 
     public void UnuseEntrypoint(Transform entrypoint)
-
     {
-
         if (entrypoint.TryGetComponent<EntryPoint>(out EntryPoint entry))
-
         {
-
             entry.SetOccupied(false);
-
-            Debug.Log($"Entry point at {entrypoint.position} freed up.");
-
         }
-
     }
 
-    /// <summary>
-
-    /// This function is executed at the end of the generation process.
-
-    /// It searches all the entry points and detects if they are occupied.
-
-    /// If not, it fills them in with walls.
-
-    /// </summary>
-
     public void FillEmptyDoors()
-
     {
-
         entrypoints.ForEach((entry) =>
-
         {
-
             if (entry.TryGetComponent(out EntryPoint entryPoint))
-
             {
-
                 if (!entryPoint.IsOccupied())
-
                 {
-
-                    GameObject wall = Instantiate(fillerWall);
-
+                    GameObject wall = Instantiate(fillerwall);
                     wall.transform.position = entry.transform.position;
-
                     wall.transform.rotation = entry.transform.rotation;
-
                 }
-
             }
-
         });
-
     }
 
     private void OnDrawGizmos()
-
     {
-
         Gizmos.color = Color.yellow;
-
         Gizmos.DrawWireCube(collider.bounds.center, collider.bounds.size);
-
     }
-
 }
 
+    
