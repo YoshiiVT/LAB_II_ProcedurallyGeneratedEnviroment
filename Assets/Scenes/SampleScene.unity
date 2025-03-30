@@ -6914,7 +6914,7 @@ MonoBehaviour:
   - {fileID: 1714174256}
   - {fileID: 121552468}
   specialRooms: []
-  alternateEnterances: []
+  alternateEntrance: []
   hallways:
   - {fileID: 1795265396}
   door: {fileID: 9029925516877180713}
