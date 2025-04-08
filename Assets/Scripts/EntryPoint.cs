@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class EntryPoint : MonoBehaviour
 {
+    [SerializeField]
     private bool isOccupied = false;
 
     public void SetOccupied(bool value = true) => isOccupied = value;

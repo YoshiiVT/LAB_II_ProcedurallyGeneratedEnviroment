@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7384914223290512131}
   - component: {fileID: 7720560846379983440}
-  - component: {fileID: 6510948946982250942}
+  - component: {fileID: 1735147033667488479}
   m_Layer: 6
   m_Name: Room2
   m_TagString: Untagged
@@ -56,7 +56,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.5, y: 2.7, z: 2.5}
   m_Center: {x: -6.5, y: 0.8, z: -6.5}
---- !u!114 &6510948946982250942
+--- !u!114 &1735147033667488479
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -65,19 +65,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 401765224375046953}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62e71544fa8c01345bbddf2b0bfe32fd, type: 3}
+  m_Script: {fileID: 11500000, guid: daff659c7f42d084f9e2554f533e7b9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   roomsLayermask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   dungeonPartType: 0
-  fillerWall: {fileID: 6473662088986994928, guid: d8312d811b450bb4988415130927f40b, type: 3}
-  entrypoints:
-  - {fileID: 3433311879846221168}
-  - {fileID: 1870636546436986652}
-  - {fileID: 174799528835486200}
-  collider: {fileID: 7720560846379983440}
+  fillerwall: {fileID: 0}
+  entrypoints: []
+  collider: {fileID: 0}
 --- !u!1 &705757597585620580
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,7 +367,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 984
+  m_VersionIndex: 990
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -722,7 +719,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 932
+  m_VersionIndex: 938
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -1074,7 +1071,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 1889
+  m_VersionIndex: 1895
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -1426,7 +1423,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 973
+  m_VersionIndex: 979
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -1778,7 +1775,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 915
+  m_VersionIndex: 921
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -2130,7 +2127,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 832
+  m_VersionIndex: 838
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -2482,7 +2479,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 953
+  m_VersionIndex: 959
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -2834,7 +2831,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 872
+  m_VersionIndex: 878
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -3186,7 +3183,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 643
+  m_VersionIndex: 649
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -3538,7 +3535,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 1651
+  m_VersionIndex: 1657
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -3934,7 +3931,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 1154
+  m_VersionIndex: 1160
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -4286,7 +4283,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 554
+  m_VersionIndex: 560
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []

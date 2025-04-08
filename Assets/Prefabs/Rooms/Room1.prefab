@@ -248,7 +248,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 965
+  m_VersionIndex: 971
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -644,7 +644,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 1586
+  m_VersionIndex: 1592
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -996,7 +996,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 1075
+  m_VersionIndex: 1081
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -1110,7 +1110,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3036634873623969443}
   - component: {fileID: 6968913279904841435}
-  - component: {fileID: 7075498651067583339}
+  - component: {fileID: 3864904025472570411}
   m_Layer: 6
   m_Name: Room1
   m_TagString: Untagged
@@ -1156,7 +1156,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.5, y: 2.7, z: 2.5}
   m_Center: {x: -2.5, y: 0.8, z: -6.5}
---- !u!114 &7075498651067583339
+--- !u!114 &3864904025472570411
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1165,20 +1165,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 708377702279868279}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62e71544fa8c01345bbddf2b0bfe32fd, type: 3}
+  m_Script: {fileID: 11500000, guid: daff659c7f42d084f9e2554f533e7b9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   roomsLayermask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   dungeonPartType: 0
-  fillerWall: {fileID: 6473662088986994928, guid: d8312d811b450bb4988415130927f40b, type: 3}
-  entrypoints:
-  - {fileID: 5152527115157902537}
-  - {fileID: 608740640876525127}
-  - {fileID: 8363804208183859273}
-  - {fileID: 7802371259685402126}
-  collider: {fileID: 6968913279904841435}
+  fillerwall: {fileID: 0}
+  entrypoints: []
+  collider: {fileID: 0}
 --- !u!1 &1217181969551031158
 GameObject:
   m_ObjectHideFlags: 0
@@ -1427,7 +1423,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 1380
+  m_VersionIndex: 1386
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -1779,7 +1775,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 2134
+  m_VersionIndex: 2140
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -2131,7 +2127,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 846
+  m_VersionIndex: 852
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -2483,7 +2479,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 1256
+  m_VersionIndex: 1262
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -3002,7 +2998,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 1014
+  m_VersionIndex: 1020
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -3354,7 +3350,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 901
+  m_VersionIndex: 907
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -3706,7 +3702,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 1753
+  m_VersionIndex: 1759
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -4058,7 +4054,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 1155
+  m_VersionIndex: 1161
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -4410,7 +4406,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 1991
+  m_VersionIndex: 1997
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -4806,7 +4802,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 745
+  m_VersionIndex: 751
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
