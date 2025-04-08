@@ -248,7 +248,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 2409
+  m_VersionIndex: 2412
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -361,11 +361,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8424814283201627211}
-  - component: {fileID: 7963919660241790266}
   - component: {fileID: 8088183373027799700}
+  - component: {fileID: 5551987840616076193}
   m_Layer: 0
   m_Name: Door
-  m_TagString: Untagged
+  m_TagString: Door
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -386,19 +386,6 @@ Transform:
   - {fileID: 8450744735977795055}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7963919660241790266
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3062530474419874898}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0545cd11845aab24094a048106693165, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doorMesh: {fileID: 1202383923537063925}
 --- !u!65 &8088183373027799700
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -420,3 +407,17 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 3, z: 2}
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &5551987840616076193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3062530474419874898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3436eb231448a4845b7d9b172b92d16c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  doorMesh: {fileID: 1202383923537063925}
+  hasTriggered: 0

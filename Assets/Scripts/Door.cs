@@ -18,6 +18,7 @@ public class Door : GameBehaviour
         if (other.CompareTag("Player"))
         {
             doorMesh.SetActive(false);
+            _DG.GenerateInEntrypoints();
         }
         
     }

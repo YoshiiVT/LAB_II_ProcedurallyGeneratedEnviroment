@@ -323,16 +323,123 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
 
     private void AlignRooms(Transform room1, Transform room2, Transform room1Entry, Transform room2Entry)
     {
-        Quaternion rotationToMatch = Quaternion.FromToRotation(room2Entry.forward, -room1Entry.forward);
-        room2.rotation = rotationToMatch * room2.rotation;
+        // Rotate room2 so its entry faces room1's entry
+        Quaternion targetRotation = Quaternion.LookRotation(-room1Entry.forward, Vector3.up);
+        Quaternion currentRotation = Quaternion.LookRotation(room2Entry.forward, Vector3.up);
 
+        Quaternion rotationOffset = targetRotation * Quaternion.Inverse(currentRotation);
+        room2.rotation = rotationOffset * room2.rotation;
+
+        // Align position
         Vector3 offset = room1Entry.position - room2Entry.position;
         room2.position += offset;
 
         Physics.SyncTransforms();
     }
 
+
     public List<DungeonPart> GetGeneratedRooms() => generatedRooms;
 
     public bool IsGenerated() => isGenerated;
+
+    public void GenerateInEntrypoints()
+    {
+        if (renderDistance == null)
+        {
+            Debug.LogError("RenderDistance is not assigned.");
+            return;
+        }
+
+        CapsuleCollider capsule = renderDistance.GetComponent<CapsuleCollider>();
+        if (capsule == null)
+        {
+            Debug.LogError("RenderDistance does not have a CapsuleCollider.");
+            return;
+        }
+
+        Vector3 point1 = renderDistance.transform.position + capsule.center + Vector3.up * capsule.height / 2;
+        Vector3 point2 = renderDistance.transform.position + capsule.center - Vector3.up * capsule.height / 2;
+
+        Collider[] hits = Physics.OverlapCapsule(point1, point2, capsule.radius, roomsLayermask);
+
+        foreach (Collider col in hits)
+        {
+            DungeonPart part = col.GetComponent<DungeonPart>();
+            if (part == null) continue;
+
+            foreach (Transform entry in part.entrypoints)
+            {
+                if (!entry.TryGetComponent<EntryPoint>(out EntryPoint entryComp)) continue;
+                if (entryComp.IsOccupied()) continue;
+
+                GameObject roomPrefab = rooms.Count > 0 ? rooms[Random.Range(0, rooms.Count)] : null;
+                if (roomPrefab == null)
+                {
+                    Debug.LogError("No room prefabs assigned.");
+                    return;
+                }
+
+                GameObject newRoom = Instantiate(roomPrefab, transform.position, transform.rotation);
+                newRoom.transform.SetParent(null);
+
+                if (!newRoom.TryGetComponent<DungeonPart>(out DungeonPart newPart))
+                {
+                    Debug.LogError("Generated room has no DungeonPart component.");
+                    Destroy(newRoom);
+                    continue;
+                }
+
+                if (!newPart.HasAvailableEntrypoint(out Transform newEntry))
+                {
+                    Debug.LogError("Generated room has no available entrypoint.");
+                    Destroy(newRoom);
+                    continue;
+                }
+
+                AlignRooms(part.transform, newRoom.transform, entry, newEntry);
+
+                if (door != null)
+                {
+                    float checkRadius = 0.1f;
+                    Collider[] doorCheck = Physics.OverlapSphere(entry.position, checkRadius);
+
+                    bool doorAlreadyExists = false;
+                    foreach (Collider doorCol in doorCheck)
+                    {
+                        if (doorCol.CompareTag("Door"))
+                        {
+                            doorAlreadyExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!doorAlreadyExists)
+                    {
+                        GameObject doorToAlign = Instantiate(door, entry.position, entry.rotation);
+                        doorToAlign.transform.SetParent(null);
+                    }
+                    else
+                    {
+                        Debug.Log($"Skipped door placement at {entry.position} – one already exists.");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Door prefab not assigned in DungeonGenerator.");
+                }
+
+                if (!HandleIntersection(newPart))
+                {
+                    part.UseEntrypoint(entry);
+                    newPart.UseEntrypoint(newEntry);
+                    generatedRooms.Add(newPart);
+                }
+                else
+                {
+                    Debug.Log("Intersection detected, destroying room.");
+                    Destroy(newRoom);
+                }
+            }
+        }
+    }
 }
