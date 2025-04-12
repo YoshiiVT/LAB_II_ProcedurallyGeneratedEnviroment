@@ -6,6 +6,7 @@ TagManager:
   tags:
   - DungeonGenerator
   - Door
+  - Wall
   layers:
   - Default
   - TransparentFX
