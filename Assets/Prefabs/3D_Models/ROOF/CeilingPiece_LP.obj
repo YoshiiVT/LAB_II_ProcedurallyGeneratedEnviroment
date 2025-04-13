@@ -1,0 +1,20 @@
+# This file uses centimeters as units for non-parametric coordinates.
+
+mtllib CeilingPiece_LP.mtl
+g default
+v -3.999986 0.000000 4.000008
+v -0.000017 0.000000 3.999990
+v -3.999969 0.000000 0.000016
+v 0.000000 0.000000 0.000000
+vt 0.046856 0.028832
+vt 0.363656 0.028832
+vt 0.046856 0.345632
+vt 0.363656 0.345632
+vn 0.000000 1.000000 0.000000
+vn 0.000000 1.000000 0.000000
+vn 0.000000 1.000000 0.000000
+vn 0.000000 1.000000 0.000000
+s off
+g CeilingPiece_LP
+usemtl initialShadingGroup
+f 1/1/1 2/2/2 4/4/3 3/3/4
