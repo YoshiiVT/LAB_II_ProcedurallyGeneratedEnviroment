@@ -78,6 +78,7 @@ public class DungeonPart : MonoBehaviour
         if (entrypoint != null && entrypoint.TryGetComponent<EntryPoint>(out EntryPoint entry))
         {
             entry.SetOccupied(true);
+            Debug.Log($"[GEN] Entrypoint at {entrypoint.name} in {entrypoint.transform.parent?.name} marked as OCCUPIED.");
         }
     }
 
@@ -89,6 +90,7 @@ public class DungeonPart : MonoBehaviour
         if (entrypoint != null && entrypoint.TryGetComponent<EntryPoint>(out EntryPoint entry))
         {
             entry.SetOccupied(false);
+            Debug.Log($"[GEN] Unusing entrypoint at {entrypoint.name} in {entrypoint.transform.parent?.name}");
         }
     }
 
@@ -117,6 +119,16 @@ public class DungeonPart : MonoBehaviour
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireCube(collider.bounds.center, collider.bounds.size);
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        foreach (var entry in entrypoints)
+        {
+            if (entry == null) continue;
+            Gizmos.DrawRay(entry.position, entry.forward * 1.5f);
         }
     }
 }

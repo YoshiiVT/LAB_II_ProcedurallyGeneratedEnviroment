@@ -80,8 +80,10 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
                 bool shouldPlaceHallway = Random.Range(0f, 10f) > 9f;
                 DungeonPart randomGeneratedRoom = null;
                 Transform room1Entrypoint = null;
-                int totalRetries = 300;
+                int totalRetries = 1000;
                 int retryIndex = 0;
+
+                Debug.Log($"[GEN] Generated rooms count: {generatedRooms.Count}");
 
                 while (randomGeneratedRoom == null && retryIndex < totalRetries)
                 {
@@ -95,8 +97,9 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
                     }
                     else
                     {
-                        Debug.Log($"Retry #{retryIndex + 1}: Room {roomToTest.name} has no available entry point.");
+                        Debug.Log($"[GEN] Retry {retryIndex + 1}: {roomToTest.name} has NO available entrypoint.");
                     }
+
                     retryIndex++;
                 }
 
@@ -283,6 +286,7 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
                     {
                         dungeonPart.UseEntrypoint(room2Entrypoint);
                         randomGeneratedRoom.UseEntrypoint(room1Entrypoint);
+                        Debug.Log($"[GEN] Unused entrypoints on retry: {randomGeneratedRoom.name} and {dungeonPart.name}");
                         generatedRooms.Add(dungeonPart);
                         placedSuccessfully = true;
                     }
