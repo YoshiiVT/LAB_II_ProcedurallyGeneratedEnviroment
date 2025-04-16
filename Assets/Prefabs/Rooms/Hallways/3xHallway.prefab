@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d7a64016ab986409015674b40af840, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entrypointSize: 1
   isOccupied: 0
 --- !u!136 &5477086560328010099
 CapsuleCollider:
@@ -153,50 +154,6 @@ Transform:
   - {fileID: 7767479299738400920}
   m_Father: {fileID: 2501285003925177801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4835294137959502673
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8202600677441226686}
-  - component: {fileID: 5555857728580685187}
-  m_Layer: 6
-  m_Name: SpawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8202600677441226686
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4835294137959502673}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6, y: 1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2501285003925177801}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5555857728580685187
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4835294137959502673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a49ad95a88dd05e488c89336d20c4e02, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &4869892727225298489
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,7 +186,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8202600677441226686}
   - {fileID: 7602892600405603928}
   - {fileID: 6019140361403402256}
   m_Father: {fileID: 0}
@@ -274,6 +230,7 @@ MonoBehaviour:
   fillerwall: {fileID: 0}
   entrypoints:
   - {fileID: 8975155200581358995}
+  - {fileID: 8530491195499538839}
   collider: {fileID: 7820602670557965475}
 --- !u!114 &6065395675654309792
 MonoBehaviour:
@@ -333,6 +290,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d7a64016ab986409015674b40af840, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entrypointSize: 1
   isOccupied: 0
 --- !u!136 &6944402461085781706
 CapsuleCollider:

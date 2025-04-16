@@ -33,9 +33,10 @@ public class DungeonPart : MonoBehaviour
     /// <summary>
     /// Finds a random available entrypoint but does NOT mark it as used.
     /// </summary>
-    public bool HasAvailableEntrypoint(out Transform entrypoint)
+    public bool HasAvailableEntrypoint(out Transform entrypoint, out EntrypointSize entrypointSize)
     {
         entrypoint = null;
+        entrypointSize = EntrypointSize.Small;
 
         if (entrypoints == null || entrypoints.Count == 0)
             return false;
@@ -47,12 +48,12 @@ public class DungeonPart : MonoBehaviour
             if (entry.TryGetComponent<EntryPoint>(out EntryPoint res) && !res.IsOccupied())
             {
                 entrypoint = entry;
+                entrypointSize = res.entrypointSize;
                 return true;
             }
             return false;
         }
 
-        // Collect all unoccupied entrypoints
         List<Transform> unoccupied = new List<Transform>();
         foreach (var ep in entrypoints)
         {
@@ -65,9 +66,15 @@ public class DungeonPart : MonoBehaviour
         if (unoccupied.Count == 0)
             return false;
 
-        // Pick one at random
         entrypoint = unoccupied[Random.Range(0, unoccupied.Count)];
-        return true;
+
+        if (entrypoint.TryGetComponent<EntryPoint>(out EntryPoint chosenEP))
+        {
+            entrypointSize = chosenEP.entrypointSize;
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>

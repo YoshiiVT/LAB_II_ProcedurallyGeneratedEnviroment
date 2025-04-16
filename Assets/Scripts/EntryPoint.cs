@@ -1,7 +1,15 @@
 using UnityEngine;
 
+public enum EntrypointSize
+{
+    Small,
+    Large
+}
+
 public class EntryPoint : MonoBehaviour
 {
+    public EntrypointSize entrypointSize;
+
     [SerializeField]
     private bool isOccupied = false;
 

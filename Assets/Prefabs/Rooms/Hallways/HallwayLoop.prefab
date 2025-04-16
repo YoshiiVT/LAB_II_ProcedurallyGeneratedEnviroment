@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d7a64016ab986409015674b40af840, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entrypointSize: 1
   isOccupied: 0
 --- !u!1 &2600270239620758175
 GameObject:
@@ -291,6 +292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d7a64016ab986409015674b40af840, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entrypointSize: 1
   isOccupied: 0
 --- !u!1 &8204848019278527364
 GameObject:

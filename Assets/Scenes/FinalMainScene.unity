@@ -1028,11 +1028,6 @@ MonoBehaviour:
   fillerwall: {fileID: 0}
   entrypoints: []
   collider: {fileID: 0}
---- !u!4 &750272980 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8530491195499538839, guid: a549a4132be1960468c9b2bb47a43358, type: 3}
-  m_PrefabInstance: {fileID: 1628313150}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &770068993
 GameObject:
   m_ObjectHideFlags: 0
@@ -1350,12 +1345,10 @@ MonoBehaviour:
   - {fileID: 161563558265431731}
   deadEnd:
   - {fileID: 1628313151}
-  alternateEntrance: []
   hallways:
   - {fileID: 5710411195927467744}
   door: {fileID: 1603878890}
   lockedDoor: {fileID: 434966265}
-  noOfRooms: 5
   roomsLayermask:
     serializedVersion: 2
     m_Bits: 64
@@ -1539,14 +1532,6 @@ PrefabInstance:
       propertyPath: fillerwall
       value: 
       objectReference: {fileID: 434966265}
-    - target: {fileID: 1804414120969328616, guid: a549a4132be1960468c9b2bb47a43358, type: 3}
-      propertyPath: entrypoints.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1804414120969328616, guid: a549a4132be1960468c9b2bb47a43358, type: 3}
-      propertyPath: 'entrypoints.Array.data[1]'
-      value: 
-      objectReference: {fileID: 750272980}
     - target: {fileID: 2501285003925177801, guid: a549a4132be1960468c9b2bb47a43358, type: 3}
       propertyPath: m_LocalPosition.x
       value: -35
@@ -1596,8 +1581,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1578859893}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 4835294137959502673, guid: a549a4132be1960468c9b2bb47a43358, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a549a4132be1960468c9b2bb47a43358, type: 3}

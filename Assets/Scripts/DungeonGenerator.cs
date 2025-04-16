@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class DungeonGenerator : Singleton<DungeonGenerator>
 {
@@ -13,9 +14,6 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
     private List<GameObject> deadEnd;
 
     [SerializeField]
-    private List<GameObject> alternateEntrance;
-
-    [SerializeField]
     private List<GameObject> hallways;
 
     [SerializeField]
@@ -24,7 +22,7 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
     [SerializeField]
     private GameObject lockedDoor;
 
-    public int noOfRooms = 10;
+    //public int noOfRooms = 10;
 
     [SerializeField]
     private LayerMask roomsLayermask;
@@ -47,205 +45,24 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
 
     public void StartGeneration()
     {
-        Generate();
+        GameObject generatedRoom = Instantiate(enterance, transform.position, transform.rotation);
+        generatedRoom.transform.SetParent(null);
+
+        if (generatedRoom.TryGetComponent<DungeonPart>(out DungeonPart dungeonPart))
+        {
+            generatedRooms.Add(dungeonPart);
+        }
+        else
+        {
+            Debug.LogError("Generated room does not have DungeonPart component.");
+        }
+        StartCoroutine(GenerateDelay());
     }
 
-    public void Generate()
+    private IEnumerator GenerateDelay()
     {
-        for (int i = 0; i < noOfRooms - alternateEntrance.Count; i++)
-        {
-            if (generatedRooms.Count < 1)
-            {
-                if (enterance != null)
-                {
-                    GameObject generatedRoom = Instantiate(enterance, transform.position, transform.rotation);
-                    generatedRoom.transform.SetParent(null);
-
-                    if (generatedRoom.TryGetComponent<DungeonPart>(out DungeonPart dungeonPart))
-                    {
-                        generatedRooms.Add(dungeonPart);
-                    }
-                    else
-                    {
-                        Debug.LogError("Generated room does not have DungeonPart component.");
-                    }
-                }
-                else
-                {
-                    Debug.LogError("Entrance object is not assigned in the DungeonGenerator.");
-                }
-            }
-            else
-            {
-                bool shouldPlaceHallway = Random.Range(0f, 10f) > 9f;
-                DungeonPart randomGeneratedRoom = null;
-                Transform room1Entrypoint = null;
-                int totalRetries = 1000;
-                int retryIndex = 0;
-
-                Debug.Log($"[GEN] Generated rooms count: {generatedRooms.Count}");
-
-                while (randomGeneratedRoom == null && retryIndex < totalRetries)
-                {
-                    int randomLinkRoomIndex = Random.Range(0, generatedRooms.Count);
-                    DungeonPart roomToTest = generatedRooms[randomLinkRoomIndex];
-
-                    if (roomToTest.HasAvailableEntrypoint(out room1Entrypoint))
-                    {
-                        randomGeneratedRoom = roomToTest;
-                        break;
-                    }
-                    else
-                    {
-                        Debug.Log($"[GEN] Retry {retryIndex + 1}: {roomToTest.name} has NO available entrypoint.");
-                    }
-
-                    retryIndex++;
-                }
-
-                if (randomGeneratedRoom == null)
-                {
-                    Debug.LogError("Could not find a valid room for hallway placement after retries.");
-                    break;
-                }
-
-                if (door != null)
-                {
-                    GameObject doorToAlign = Instantiate(door, transform.position, transform.rotation);
-
-                    if (shouldPlaceHallway)
-                    {
-                        if (hallways.Count > 0)
-                        {
-                            int randomIndex = Random.Range(0, hallways.Count);
-                            GameObject generatedHallway = Instantiate(hallways[randomIndex], transform.position, transform.rotation);
-                            generatedHallway.transform.SetParent(null);
-
-                            if (generatedHallway.TryGetComponent<DungeonPart>(out DungeonPart dungeonPart))
-                            {
-                                if (dungeonPart.HasAvailableEntrypoint(out Transform room2Entrypoint))
-                                {
-                                    AlignRooms(randomGeneratedRoom.transform, generatedHallway.transform, room1Entrypoint, room2Entrypoint);
-                                    doorToAlign.transform.position = room1Entrypoint.position;
-                                    doorToAlign.transform.rotation = room1Entrypoint.rotation;
-
-                                    if (!HandleIntersection(dungeonPart))
-                                    {
-                                        // Only mark as used *after* successful placement
-                                        dungeonPart.UseEntrypoint(room2Entrypoint);
-                                        randomGeneratedRoom.UseEntrypoint(room1Entrypoint);
-                                        generatedRooms.Add(dungeonPart);
-                                    }
-                                    else
-                                    {
-                                        Debug.LogWarning("Intersection detected, retrying hallway placement...");
-                                        RetryPlacementLoop(generatedHallway, doorToAlign);
-                                        continue;
-                                    }
-                                }
-                                else
-                                {
-                                    Debug.LogError("Generated hallway has no valid entry point.");
-                                }
-                            }
-                            else
-                            {
-                                Debug.LogError("Generated hallway does not have DungeonPart component.");
-                            }
-                        }
-                        else
-                        {
-                            Debug.LogError("Hallways list is empty.");
-                        }
-                    }
-                    else
-                    {
-                        if (deadEnd.Count > 0 || rooms.Count > 0)
-                        {
-                            GameObject generatedRoom;
-
-                            if (deadEnd.Count > 0)
-                            {
-                                bool shouldPlaceDeadRoom = Random.Range(0f, 1f) > 0.5f;
-                                bool canPlaceDeadRoom = false;
-
-                                if (shouldPlaceDeadRoom)
-                                {
-                                    foreach (DungeonPart otherRoom in generatedRooms)
-                                    {
-                                        if (otherRoom != randomGeneratedRoom && otherRoom.HasAvailableEntrypoint(out _))
-                                        {
-                                            canPlaceDeadRoom = true;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                if (shouldPlaceDeadRoom && canPlaceDeadRoom)
-                                {
-                                    int randomIndex = Random.Range(0, deadEnd.Count);
-                                    generatedRoom = Instantiate(deadEnd[randomIndex], transform.position, transform.rotation);
-                                }
-                                else
-                                {
-                                    int randomIndex = Random.Range(0, rooms.Count);
-                                    generatedRoom = Instantiate(rooms[randomIndex], transform.position, transform.rotation);
-                                }
-                            }
-                            else
-                            {
-                                int randomIndex = Random.Range(0, rooms.Count);
-                                generatedRoom = Instantiate(rooms[randomIndex], transform.position, transform.rotation);
-                            }
-
-                            generatedRoom.transform.SetParent(null);
-
-                            if (generatedRoom.TryGetComponent<DungeonPart>(out DungeonPart dungeonPart))
-                            {
-                                if (dungeonPart.HasAvailableEntrypoint(out Transform room2Entrypoint))
-                                {
-                                    AlignRooms(randomGeneratedRoom.transform, generatedRoom.transform, room1Entrypoint, room2Entrypoint);
-                                    doorToAlign.transform.position = room1Entrypoint.position;
-                                    doorToAlign.transform.rotation = room1Entrypoint.rotation;
-
-                                    if (!HandleIntersection(dungeonPart))
-                                    {
-                                        dungeonPart.UseEntrypoint(room2Entrypoint);
-                                        randomGeneratedRoom.UseEntrypoint(room1Entrypoint);
-                                        generatedRooms.Add(dungeonPart);
-                                    }
-                                    else
-                                    {
-                                        Debug.LogWarning("Intersection detected, retrying room placement...");
-                                        RetryPlacementLoop(generatedRoom, doorToAlign);
-                                        continue;
-                                    }
-                                }
-                                else
-                                {
-                                    Debug.LogError("Generated room has no valid entry point.");
-                                }
-                            }
-                            else
-                            {
-                                Debug.LogError("Generated room does not have DungeonPart component.");
-                            }
-                        }
-                        else
-                        {
-                            Debug.LogError("SpecialRooms or Rooms list is empty.");
-                        }
-                    }
-                }
-                else
-                {
-                    Debug.LogError("Door object is not assigned in the DungeonGenerator.");
-                }
-            }
-        }
-
-        // Optional: Fill doors for unused entrypoints
-        // FillEmptyEntrances();
+        yield return new WaitForSeconds(0.1f);
+        GenerateInEntrypoints();
     }
 
     private void RetryPlacementLoop(GameObject itemToPlace, GameObject doorToPlace)
@@ -258,6 +75,7 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
         {
             DungeonPart randomGeneratedRoom = null;
             Transform room1Entrypoint = null;
+            EntrypointSize entrypointSize = EntrypointSize.Small;
 
             int totalRetries = 100;
             int retryIndex = 0;
@@ -266,7 +84,7 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
             {
                 int randomLinkRoomIndex = Random.Range(0, generatedRooms.Count);
                 DungeonPart roomToTest = generatedRooms[randomLinkRoomIndex];
-                if (roomToTest.HasAvailableEntrypoint(out room1Entrypoint))
+                if (roomToTest.HasAvailableEntrypoint(out room1Entrypoint, out entrypointSize))
                 {
                     randomGeneratedRoom = roomToTest;
                     break;
@@ -276,7 +94,7 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
 
             if (itemToPlace.TryGetComponent<DungeonPart>(out DungeonPart dungeonPart))
             {
-                if (dungeonPart.HasAvailableEntrypoint(out Transform room2Entrypoint))
+                if (dungeonPart.HasAvailableEntrypoint(out Transform room2Entrypoint, out EntrypointSize room2EntrypointSize))
                 {
                     AlignRooms(randomGeneratedRoom.transform, itemToPlace.transform, room1Entrypoint, room2Entrypoint);
                     doorToPlace.transform.position = room1Entrypoint.position;
@@ -425,9 +243,10 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
                 if (!entry.TryGetComponent<EntryPoint>(out EntryPoint entryComp)) continue;
                 if (entryComp.IsOccupied()) continue;
 
+                EntrypointSize requiredSize = entryComp.entrypointSize;
+
                 GameObject roomPrefab = null;
 
-                // Count unoccupied entrypoints within RenderDistance
                 int unoccupiedEntryCount = 0;
                 if (RenderDistance != null)
                 {
@@ -453,13 +272,8 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
                             }
                         }
                     }
-                    else
-                    {
-                        Debug.LogError("RenderDistance does not have a CapsuleCollider.");
-                    }
                 }
 
-                // Decide what type of room to place
                 float roll = Random.value;
 
                 if (roll < 0.33f && hallways.Count > 0)
@@ -477,92 +291,99 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
                 else
                 {
                     Debug.LogError("No room prefabs available in any list.");
-                }
-
-                if (roomPrefab == null)
-                {
-                    Debug.LogError("Room not chosen.");
                     continue;
                 }
 
-                GameObject newRoom = Instantiate(roomPrefab, transform.position, transform.rotation);
-                newRoom.transform.SetParent(null);
+                // Retry loop for matching entrypoint size
+                int maxTries = 10;
+                bool successfullyPlaced = false;
 
-                if (!newRoom.TryGetComponent<DungeonPart>(out DungeonPart newPart))
+                for (int i = 0; i < maxTries; i++)
                 {
-                    Debug.LogError("Generated room has no DungeonPart component.");
-                    Destroy(newRoom);
-                    continue;
-                }
+                    GameObject newRoom = Instantiate(roomPrefab, transform.position, transform.rotation);
+                    newRoom.transform.SetParent(null);
 
-                if (!newPart.HasAvailableEntrypoint(out Transform newEntry))
-                {
-                    Debug.LogError("Generated room has no available entrypoint.");
-                    Destroy(newRoom);
-                    continue;
-                }
-
-                AlignRooms(part.transform, newRoom.transform, entry, newEntry);
-
-                if (door != null)
-                {
-                    float checkRadius = 0.1f;
-                    Collider[] doorCheck = Physics.OverlapSphere(entry.position, checkRadius);
-
-                    bool doorAlreadyExists = false;
-                    foreach (Collider doorCol in doorCheck)
+                    if (!newRoom.TryGetComponent<DungeonPart>(out DungeonPart newPart))
                     {
-                        if (doorCol.CompareTag("Door"))
+                        Debug.LogError("Generated room has no DungeonPart component.");
+                        Destroy(newRoom);
+                        break;
+                    }
+
+                    if (!newPart.HasAvailableEntrypoint(out Transform newEntry, out EntrypointSize newSize))
+                    {
+                        Debug.LogWarning("Generated room has no available entrypoint.");
+                        Destroy(newRoom);
+                        break;
+                    }
+
+                    if (newSize != requiredSize)
+                    {
+                        Destroy(newRoom);
+                        continue; // Retry with same prefab or new selection if you randomize again
+                    }
+
+                    AlignRooms(part.transform, newRoom.transform, entry, newEntry);
+
+                    if (HandleIntersection(newPart))
+                    {
+                        Debug.Log("Intersection detected, destroying room.");
+                        Destroy(newRoom);
+
+                        // Mark original entrypoint as occupied
+                        entryComp.SetOccupied();
+
+                        // Destroy any door already there
+                        Collider[] overlapping = Physics.OverlapSphere(entry.position, 0.2f);
+                        foreach (Collider col2 in overlapping)
                         {
-                            doorAlreadyExists = true;
-                            break;
+                            if (col2.CompareTag("Door"))
+                            {
+                                Destroy(col2.gameObject);
+                            }
+                        }
+
+                        if (lockedDoor != null)
+                        {
+                            Instantiate(lockedDoor, entry.position, entry.rotation, part.transform);
+                        }
+
+                        break;
+                    }
+
+                    // Place door
+                    if (door != null)
+                    {
+                        float checkRadius = 0.1f;
+                        Collider[] doorCheck = Physics.OverlapSphere(entry.position, checkRadius);
+
+                        bool doorAlreadyExists = false;
+                        foreach (Collider doorCol in doorCheck)
+                        {
+                            if (doorCol.CompareTag("Door"))
+                            {
+                                doorAlreadyExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!doorAlreadyExists)
+                        {
+                            GameObject doorToAlign = Instantiate(door, entry.position, entry.rotation);
+                            doorToAlign.transform.SetParent(null);
                         }
                     }
 
-                    if (!doorAlreadyExists)
-                    {
-                        GameObject doorToAlign = Instantiate(door, entry.position, entry.rotation);
-                        doorToAlign.transform.SetParent(null);
-                    }
-                    else
-                    {
-                        Debug.Log($"Skipped door placement at {entry.position} – one already exists.");
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning("Door prefab not assigned in DungeonGenerator.");
-                }
-
-                if (!HandleIntersection(newPart))
-                {
                     part.UseEntrypoint(entry);
                     newPart.UseEntrypoint(newEntry);
                     generatedRooms.Add(newPart);
+                    successfullyPlaced = true;
+                    break;
                 }
-                else
+
+                if (!successfullyPlaced)
                 {
-                    Debug.Log("Intersection detected, destroying room.");
-                    Destroy(newRoom);
-
-                    // Mark original entrypoint as occupied
-                    entryComp.SetOccupied();
-
-                    // Destroy any existing door at this entrypoint
-                    Collider[] overlapping = Physics.OverlapSphere(entry.position, 0.2f);
-                    foreach (Collider col2 in overlapping)
-                    {
-                        if (col2.CompareTag("Door"))
-                        {
-                            Destroy(col2.gameObject);
-                        }
-                    }
-
-                    // Place locked door at the original entrypoint
-                    if (lockedDoor != null)
-                    {
-                        Instantiate(lockedDoor, entry.position, entry.rotation, part.transform);
-                    }
+                    Debug.LogWarning($"Failed to place a room with matching entrypoint size at {entry.position}");
                 }
             }
         }
