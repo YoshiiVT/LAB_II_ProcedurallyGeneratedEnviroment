@@ -65,72 +65,6 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
         GenerateInEntrypoints();
     }
 
-    private void RetryPlacementLoop(GameObject itemToPlace, GameObject doorToPlace)
-    {
-        int maxRetries = 100;
-        int retries = 0;
-        bool placedSuccessfully = false;
-
-        while (!placedSuccessfully && retries < maxRetries)
-        {
-            DungeonPart randomGeneratedRoom = null;
-            Transform room1Entrypoint = null;
-            EntrypointSize entrypointSize = EntrypointSize.Small;
-
-            int totalRetries = 100;
-            int retryIndex = 0;
-
-            while (randomGeneratedRoom == null && retryIndex < totalRetries)
-            {
-                int randomLinkRoomIndex = Random.Range(0, generatedRooms.Count);
-                DungeonPart roomToTest = generatedRooms[randomLinkRoomIndex];
-                if (roomToTest.HasAvailableEntrypoint(out room1Entrypoint, out entrypointSize))
-                {
-                    randomGeneratedRoom = roomToTest;
-                    break;
-                }
-                retryIndex++;
-            }
-
-            if (itemToPlace.TryGetComponent<DungeonPart>(out DungeonPart dungeonPart))
-            {
-                if (dungeonPart.HasAvailableEntrypoint(out Transform room2Entrypoint, out EntrypointSize room2EntrypointSize))
-                {
-                    AlignRooms(randomGeneratedRoom.transform, itemToPlace.transform, room1Entrypoint, room2Entrypoint);
-                    doorToPlace.transform.position = room1Entrypoint.position;
-                    doorToPlace.transform.rotation = room1Entrypoint.rotation;
-
-                    if (!HandleIntersection(dungeonPart))
-                    {
-                        dungeonPart.UseEntrypoint(room2Entrypoint);
-                        randomGeneratedRoom.UseEntrypoint(room1Entrypoint);
-                        Debug.Log($"[GEN] Unused entrypoints on retry: {randomGeneratedRoom.name} and {dungeonPart.name}");
-                        generatedRooms.Add(dungeonPart);
-                        placedSuccessfully = true;
-                    }
-                    else
-                    {
-                        dungeonPart.UnuseEntrypoint(room2Entrypoint);
-                        randomGeneratedRoom.UnuseEntrypoint(room1Entrypoint);
-                        retries++;
-                    }
-                }
-            }
-        }
-
-        if (!placedSuccessfully)
-        {
-            Debug.LogWarning("Failed to place room after max retries.");
-            Destroy(itemToPlace);
-            Destroy(doorToPlace);
-        }
-    }
-
-    private void FillEmptyEntrances()
-    {
-        generatedRooms.ForEach(room => room.FillEmptyDoors());
-    }
-
     private bool HandleIntersection(DungeonPart dungeonPart)
     {
         bool didIntersect = false;
@@ -389,5 +323,182 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
         }
     }
 
+    private bool TryGenerateRoomAt(EntryPoint entryComp, DungeonPart part, Transform entry)
+    {
+        EntrypointSize requiredSize = entryComp.entrypointSize;
+        GameObject roomPrefab = null;
+
+        int unoccupiedEntryCount = 0;
+        if (RenderDistance != null)
+        {
+            CapsuleCollider renderCapsule = RenderDistance.GetComponent<CapsuleCollider>();
+            if (renderCapsule != null)
+            {
+                Vector3 renderPoint1 = RenderDistance.transform.position + renderCapsule.center + Vector3.up * renderCapsule.height / 2;
+                Vector3 renderPoint2 = RenderDistance.transform.position + renderCapsule.center - Vector3.up * renderCapsule.height / 2;
+
+                Collider[] nearbyHits = Physics.OverlapCapsule(renderPoint1, renderPoint2, renderCapsule.radius, roomsLayermask);
+
+                foreach (Collider nearbyCol in nearbyHits)
+                {
+                    DungeonPart dp = nearbyCol.GetComponent<DungeonPart>();
+                    if (dp == null) continue;
+
+                    foreach (Transform ep in dp.entrypoints)
+                    {
+                        if (ep.TryGetComponent<EntryPoint>(out EntryPoint epComp) && !epComp.IsOccupied())
+                        {
+                            unoccupiedEntryCount++;
+                        }
+                    }
+                }
+            }
+        }
+
+        float roll = Random.value;
+        if (roll < 0.33f && hallways.Count > 0)
+            roomPrefab = hallways[Random.Range(0, hallways.Count)];
+        else if (roll < 0.66f && deadEnd.Count > 0 && unoccupiedEntryCount >= 2)
+            roomPrefab = deadEnd[Random.Range(0, deadEnd.Count)];
+        else if (rooms.Count > 0)
+            roomPrefab = rooms[Random.Range(0, rooms.Count)];
+        else
+            return false;
+
+        // Retry loop
+        int maxTries = 10;
+        for (int i = 0; i < maxTries; i++)
+        {
+            GameObject newRoom = Instantiate(roomPrefab, transform.position, transform.rotation);
+            newRoom.transform.SetParent(null);
+
+            if (!newRoom.TryGetComponent<DungeonPart>(out DungeonPart newPart))
+            {
+                Destroy(newRoom);
+                break;
+            }
+
+            if (!newPart.HasAvailableEntrypoint(out Transform newEntry, out EntrypointSize newSize))
+            {
+                Destroy(newRoom);
+                break;
+            }
+
+            if (newSize != requiredSize)
+            {
+                Destroy(newRoom);
+                continue;
+            }
+
+            AlignRooms(part.transform, newRoom.transform, entry, newEntry);
+
+            if (HandleIntersection(newPart))
+            {
+                Destroy(newRoom);
+                entryComp.SetOccupied();
+
+                Collider[] overlapping = Physics.OverlapSphere(entry.position, 0.2f);
+                foreach (Collider col2 in overlapping)
+                {
+                    if (col2.CompareTag("Door"))
+                        Destroy(col2.gameObject);
+                }
+
+                if (lockedDoor != null)
+                    Instantiate(lockedDoor, entry.position, entry.rotation, part.transform);
+
+                return false;
+            }
+
+            // Place door
+            if (door != null)
+            {
+                Collider[] doorCheck = Physics.OverlapSphere(entry.position, 0.1f);
+                bool doorAlreadyExists = false;
+                foreach (Collider doorCol in doorCheck)
+                {
+                    if (doorCol.CompareTag("Door"))
+                    {
+                        doorAlreadyExists = true;
+                        break;
+                    }
+                }
+
+                if (!doorAlreadyExists)
+                {
+                    GameObject doorToAlign = Instantiate(door, entry.position, entry.rotation);
+                    doorToAlign.transform.SetParent(null);
+                }
+            }
+
+            part.UseEntrypoint(entry);
+            newPart.UseEntrypoint(newEntry);
+            generatedRooms.Add(newPart);
+            return true;
+        }
+
+        return false;
+    }
+
+    public void TryFillingEntrypointsUntilStuck()
+    {
+        StartCoroutine(FillEntrypointsLoop());
+    }
+
+    private IEnumerator FillEntrypointsLoop()
+    {
+        // Recheck every 0.2 seconds until all entrypoints are filled
+        bool madeProgress;
+
+        do
+        {
+            madeProgress = false;
+
+            if (RoomGenerationDistance == null)
+            {
+                Debug.LogError("RoomGenerationDistance is not assigned.");
+                yield break;
+            }
+
+            CapsuleCollider capsule = RoomGenerationDistance.GetComponent<CapsuleCollider>();
+            if (capsule == null)
+            {
+                Debug.LogError("RoomGenerationDistance does not have a CapsuleCollider.");
+                yield break;
+            }
+
+            Vector3 point1 = RoomGenerationDistance.transform.position + capsule.center + Vector3.up * capsule.height / 2;
+            Vector3 point2 = RoomGenerationDistance.transform.position + capsule.center - Vector3.up * capsule.height / 2;
+
+            Collider[] hits = Physics.OverlapCapsule(point1, point2, capsule.radius, roomsLayermask);
+
+            foreach (Collider col in hits)
+            {
+                if (col == null) continue;
+
+                DungeonPart part = col.GetComponent<DungeonPart>();
+                if (part == null || part.gameObject == null) continue;
+
+                foreach (Transform entry in part.entrypoints)
+                {
+                    if (entry == null) continue;
+
+                    if (!entry.TryGetComponent<EntryPoint>(out EntryPoint entryComp)) continue;
+                    if (entryComp.IsOccupied()) continue;
+
+                    if (TryGenerateRoomAt(entryComp, part, entry))
+                    {
+                        madeProgress = true;
+                        yield return new WaitForSeconds(0.05f); // small delay to allow physics to sync
+                    }
+                }
+            }
+
+            yield return new WaitForSeconds(0.2f); // wait before checking again
+
+        } while (madeProgress);
+
+        Debug.Log("All reachable entrypoints filled.");
+    }
 }
 

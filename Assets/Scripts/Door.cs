@@ -18,9 +18,10 @@ public class Door : GameBehaviour
         if (other.CompareTag("Player"))
         {
             doorMesh.SetActive(false);
-            _DG.GenerateInEntrypoints();
+            _DG.TryFillingEntrypointsUntilStuck();
+
         }
-        
+
     }
 
     private void OnTriggerExit(Collider other)
