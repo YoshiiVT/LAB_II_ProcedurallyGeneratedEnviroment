@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib HallwayCornerTrim.mtl
+mtllib HallwayCornerTrim_LP.mtl
 g default
 v 0.337188 0.000000 0.000000
 v 0.337188 0.066654 0.000000
