@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2171604805596451531
+--- !u!1 &2221391838843463119
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5994120698828046018}
-  - component: {fileID: 8388864751242601863}
-  - component: {fileID: 2788632059804945455}
+  - component: {fileID: 8014551100578350696}
+  - component: {fileID: 6422834923314704803}
+  - component: {fileID: 7135392840281950453}
   m_Layer: 0
   m_Name: HallwayRoofTrim_LP
   m_TagString: Untagged
@@ -18,13 +18,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5994120698828046018
+--- !u!4 &8014551100578350696
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2171604805596451531}
+  m_GameObject: {fileID: 2221391838843463119}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -33,21 +33,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &8388864751242601863
+--- !u!33 &6422834923314704803
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2171604805596451531}
+  m_GameObject: {fileID: 2221391838843463119}
   m_Mesh: {fileID: -3404741073798555481, guid: bcb864c0e4c64524f921ecd90c1e0542, type: 3}
---- !u!23 &2788632059804945455
+--- !u!23 &7135392840281950453
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2171604805596451531}
+  m_GameObject: {fileID: 2221391838843463119}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
