@@ -2,8 +2,15 @@ using UnityEngine;
 
 public class Door : GameBehaviour
 {
-    [SerializeField] GameObject doorMesh;
-    public bool hasTriggered;
+    //[SerializeField] GameObject doorMesh;
+    //public bool hasTriggered;
+    [SerializeField] Animator animator;
+
+    private void Awake()
+    {
+        animator = GetComponent<Animator>();
+        if (animator != null) { Debug.LogError("AnimatorNotFound"); }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -15,9 +22,10 @@ public class Door : GameBehaviour
             hasTriggered = true;
         }
         */
+
         if (other.CompareTag("Player"))
         {
-            doorMesh.SetActive(false);
+            animator.SetTrigger("Open");
             _DG.TryFillingEntrypointsUntilStuck();
 
         }
@@ -28,7 +36,7 @@ public class Door : GameBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            doorMesh.SetActive(true);
+            animator.SetTrigger("Close");
         }
     }
 }
