@@ -17,10 +17,16 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
     private List<GameObject> hallways;
 
     [SerializeField]
-    private GameObject door;
+    private GameObject largeDoor;
+
+    [SerializeField] 
+    private GameObject smallDoor;
 
     [SerializeField]
-    private GameObject lockedDoor;
+    private GameObject largeLockedDoor;
+
+    [SerializeField] 
+    private GameObject smallLockedDoor;
 
     //public int noOfRooms = 10;
 
@@ -106,10 +112,10 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
                         entryComp.SetOccupied();
 
                         // Spawn locked door
-                        if (lockedDoor != null)
+                        if (largeLockedDoor != null)
                         {
                             GameObject doorInstance = Instantiate(
-                                lockedDoor,
+                                largeLockedDoor,
                                 entry.position,
                                 entry.rotation,
                                 dungeonPart.transform // parent it under the room
@@ -277,38 +283,66 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
                             }
                         }
 
-                        if (lockedDoor != null)
+                        if (largeLockedDoor != null)
                         {
-                            Instantiate(lockedDoor, entry.position, entry.rotation, part.transform);
+                            Instantiate(largeLockedDoor, entry.position, entry.rotation, part.transform);
                         }
 
                         break;
                     }
 
                     // Place door
-                    if (door != null)
+                    if ((requiredSize == EntrypointSize.Large))
                     {
-                        float checkRadius = 0.1f;
-                        Collider[] doorCheck = Physics.OverlapSphere(entry.position, checkRadius);
-
-                        bool doorAlreadyExists = false;
-                        foreach (Collider doorCol in doorCheck)
+                        if (largeDoor != null)
                         {
-                            if (doorCol.CompareTag("Door"))
+                            float checkRadius = 0.1f;
+                            Collider[] doorCheck = Physics.OverlapSphere(entry.position, checkRadius);
+
+                            bool doorAlreadyExists = false;
+                            foreach (Collider doorCol in doorCheck)
                             {
-                                doorAlreadyExists = true;
-                                break;
+                                if (doorCol.CompareTag("Door"))
+                                {
+                                    doorAlreadyExists = true;
+                                    break;
+                                }
+                            }
+
+                            if (!doorAlreadyExists)
+                            {
+                                GameObject doorToAlign = Instantiate(largeDoor, entry.position, entry.rotation);
+                                doorToAlign.transform.SetParent(null);
                             }
                         }
-
-                        if (!doorAlreadyExists)
+                    }
+                    else
+                    {
+                        if (smallDoor != null)
                         {
-                            GameObject doorToAlign = Instantiate(door, entry.position, entry.rotation);
-                            doorToAlign.transform.SetParent(null);
+                            float checkRadius = 0.1f;
+                            Collider[] doorCheck = Physics.OverlapSphere(entry.position, checkRadius);
+
+                            bool doorAlreadyExists = false;
+                            foreach (Collider doorCol in doorCheck)
+                            {
+                                if (doorCol.CompareTag("Door"))
+                                {
+                                    doorAlreadyExists = true;
+                                    break;
+                                }
+                            }
+
+                            if (!doorAlreadyExists)
+                            {
+                                GameObject doorToAlign = Instantiate(smallDoor, entry.position, entry.rotation);
+                                doorToAlign.transform.SetParent(null);
+                            }
                         }
                     }
 
-                    part.UseEntrypoint(entry);
+
+                        part.UseEntrypoint(entry);
                     newPart.UseEntrypoint(newEntry);
                     generatedRooms.Add(newPart);
                     successfullyPlaced = true;
@@ -404,30 +438,59 @@ public class DungeonGenerator : Singleton<DungeonGenerator>
                         Destroy(col2.gameObject);
                 }
 
-                if (lockedDoor != null)
-                    Instantiate(lockedDoor, entry.position, entry.rotation, part.transform);
+                if (largeLockedDoor != null)
+                    Instantiate(largeLockedDoor, entry.position, entry.rotation, part.transform);
 
                 return false;
             }
 
             // Place door
-            if (door != null)
+            if ((requiredSize == EntrypointSize.Large))
             {
-                Collider[] doorCheck = Physics.OverlapSphere(entry.position, 0.1f);
-                bool doorAlreadyExists = false;
-                foreach (Collider doorCol in doorCheck)
+                if (largeDoor != null)
                 {
-                    if (doorCol.CompareTag("Door"))
+                    float checkRadius = 0.1f;
+                    Collider[] doorCheck = Physics.OverlapSphere(entry.position, checkRadius);
+
+                    bool doorAlreadyExists = false;
+                    foreach (Collider doorCol in doorCheck)
                     {
-                        doorAlreadyExists = true;
-                        break;
+                        if (doorCol.CompareTag("Door"))
+                        {
+                            doorAlreadyExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!doorAlreadyExists)
+                    {
+                        GameObject doorToAlign = Instantiate(largeDoor, entry.position, entry.rotation);
+                        doorToAlign.transform.SetParent(null);
                     }
                 }
-
-                if (!doorAlreadyExists)
+            }
+            else
+            {
+                if (smallDoor != null)
                 {
-                    GameObject doorToAlign = Instantiate(door, entry.position, entry.rotation);
-                    doorToAlign.transform.SetParent(null);
+                    float checkRadius = 0.1f;
+                    Collider[] doorCheck = Physics.OverlapSphere(entry.position, checkRadius);
+
+                    bool doorAlreadyExists = false;
+                    foreach (Collider doorCol in doorCheck)
+                    {
+                        if (doorCol.CompareTag("Door"))
+                        {
+                            doorAlreadyExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!doorAlreadyExists)
+                    {
+                        GameObject doorToAlign = Instantiate(smallDoor, entry.position, entry.rotation);
+                        doorToAlign.transform.SetParent(null);
+                    }
                 }
             }
 

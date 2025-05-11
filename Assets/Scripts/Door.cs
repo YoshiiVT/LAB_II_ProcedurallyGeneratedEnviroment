@@ -6,12 +6,6 @@ public class Door : GameBehaviour
     //public bool hasTriggered;
     [SerializeField] Animator animator;
 
-    private void Awake()
-    {
-        animator = GetComponent<Animator>();
-        if (animator != null) { Debug.LogError("AnimatorNotFound"); }
-    }
-
     private void OnTriggerEnter(Collider other)
     {
     
